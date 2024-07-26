@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mastery Points Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        input {
+            margin: 5px 0;
+            padding: 5px;
+            width: 100%;
+        }
+        button {
+            padding: 10px;
+            margin-top: 10px;
+        }
+        .re.result {
+            margin-top: 20px;
+        }
+        .highlight {
+            color: rgb(255, 0, 64);
+            font-weight: bold;
+        }
+        .input-group {
+            display: flex;
+            align-items: center;
+        }
+        .input-group input {
+            flex: 1;
+        }
+        .input-group button {
+            margin-left: 10px;
+            padding: 10px 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Mastery Points Calculator</h1>
+    <label for="currentTrophies">Current Trophies:</label>
+    <input type="number" id="currentTrophies">
+
+    <label for="currentMastery">Current Mastery Points:</label>
+    <input type="number" id="currentMastery">
+
+    <label for="maxMastery">Target Mastery Points:</label>
+    <div class="input-group">
+        <input type="number" id="maxMastery">
+        <button type="button" onclick="setMaxMastery()">Gold III</button>
+    </div>
+
+    <label for="winPercentage">Win Percentage:</label>
+    <input type="number" id="winPercentage">
+
+    <button onclick="calculateGames()">Calculate</button>
+
+    <div class="result">
+        <p id="result"></p>
+        <p id="time"></p>
+    </div>
+
+    <script>
+        const ranges = [
+            { start: 0, end: 49, masteryPoints: 5, trophyWin: 8, trophyLoss: 0 },
+            { start: 50, end: 99, masteryPoints: 7, trophyWin: 8, trophyLoss: -1 },
+            { start: 100, end: 149, masteryPoints: 10, trophyWin: 8, trophyLoss: -2 },
+            { start: 150, end: 199, masteryPoints: 12, trophyWin: 8, trophyLoss: -2 },
+            { start: 200, end: 249, masteryPoints: 15, trophyWin: 8, trophyLoss: -3 },
+            { start: 250, end: 299, masteryPoints: 17, trophyWin: 8, trophyLoss: -3 },
+            { start: 300, end: 349, masteryPoints: 20, trophyWin: 8, trophyLoss: -4 },
+            { start: 350, end: 399, masteryPoints: 23, trophyWin: 8, trophyLoss: -4 },
+            { start: 400, end: 449, masteryPoints: 25, trophyWin: 8, trophyLoss: -5 },
+            { start: 450, end: 499, masteryPoints: 27, trophyWin: 8, trophyLoss: -5 },
+            { start: 500, end: 549, masteryPoints: 35, trophyWin: 8, trophyLoss: -6 },
+            { start: 550, end: 599, masteryPoints: 40, trophyWin: 8, trophyLoss: -6 },
+            { start: 600, end: 649, masteryPoints: 45, trophyWin: 8, trophyLoss: -7 },
+            { start: 650, end: 699, masteryPoints: 50, trophyWin: 8, trophyLoss: -7 },
+            { start: 700, end: 749, masteryPoints: 55, trophyWin: 8, trophyLoss: -8 },
+            { start: 750, end: 799, masteryPoints: 60, trophyWin: 8, trophyLoss: -8 },
+            { start: 800, end: 849, masteryPoints: 65, trophyWin: 7, trophyLoss: -9 },
+            { start: 850, end: 899, masteryPoints: 70, trophyWin: 7, trophyLoss: -9 },
+            { start: 900, end: 949, masteryPoints: 75, trophyWin: 6, trophyLoss: -10 },
+            { start: 950, end: 999, masteryPoints: 80, trophyWin: 6, trophyLoss: -10 },
+            { start: 1000, end: 1049, masteryPoints: 85, trophyWin: 5, trophyLoss: -11 },
+            { start: 1050, end: 1099, masteryPoints: 90, trophyWin: 5, trophyLoss: -11 },
+            { start: 1100, end: 1149, masteryPoints: 95, trophyWin: 4, trophyLoss: -12 },
+            { start: 1150, end: 1199, masteryPoints: 100, trophyWin: 4, trophyLoss: -12 },
+            { start: 1200, end: Infinity, masteryPoints: 100, trophyWin: 3, trophyLoss: -12 }
+        ];
+
+        function getRange(trophies) {
+            return ranges.find(range => trophies >= range.start && trophies <= range.end);
+        }
+
+        function setMaxMastery() {
+            document.getElementById('maxMastery').value = 24800;
+        }
+
+        function calculateGames() {
+            let currentTrophies = parseInt(document.getElementById('currentTrophies').value);
+            let currentMastery = parseInt(document.getElementById('currentMastery').value);
+            let maxMastery = parseInt(document.getElementById('maxMastery').value);
+            let winPercentage = parseInt(document.getElementById('winPercentage').value);
+
+            let games = 0;
+            while (currentMastery < maxMastery) {
+                let range = getRange(currentTrophies);
+                let win = (Math.random() * 100) < winPercentage;
+                if (win) {
+                    currentMastery += range.masteryPoints;
+                    currentTrophies += range.trophyWin;
+                } else {
+                    currentTrophies += range.trophyLoss;
+                }
+                games++;
+            }
+
+            document.getElementById('result').innerText = `Total games required to reach target mastery: ${games}`;
+            let totalSeconds = games * 135;
+            let totalMinutes = totalSeconds / 60;
+            let totalHours = totalSeconds / 3600;
+            let totalDays = totalSeconds / 86400;
+
+            document.getElementById('time').innerHTML = `With an average time of 2 min 15 sec per game, it would take: 
+                <span class="highlight">${totalMinutes.toFixed(2)}</span> minutes 
+                or <span class="highlight">${totalHours.toFixed(2)}</span> hours 
+                or <span class="highlight">${totalDays.toFixed(2)}</span> days of playtime (loading and finding matches + daily mastery cap not considered)`;
+        }
+    </script>
+</body>
+</html>
